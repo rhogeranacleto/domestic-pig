@@ -1,4 +1,12 @@
-const data = require('./data.js');
+var data;
+
+if (process.env.TEST) {
+
+	data = require('./data.test.js');
+} else {
+
+	data = require('./data.js');
+}
 const catalog = data.catalog;
 const sales = data.sales;
 const purchases = data.purchases;
@@ -63,7 +71,7 @@ do {
 
 				firstMonth.add(1, 'month');
 			}
-			
+
 			for (let i = 0; i < purchase.n_payments; i++) {
 
 				const month = moment(firstMonth).add(i, 'month');
@@ -93,22 +101,25 @@ do {
 		});
 	}
 
-	dates.push({
-		date: day.format('YYYY-MM-DD'),
-		value: parseInt(value)
-	});
-	
+	if (dates.length && dates[dates.length - 1].value !== parseInt(value) || !dates.length) {
+
+		dates.push({
+			date: day.format('YYYY-MM-DD'),
+			value: parseInt(value)
+		});
+		console.log(day.format('DD-MM-YYYY'), value, salesParcels.filter(s => s.month.isAfter(day)).length, purchasesParcels.filter(p => p.month.isAfter(day)).length);
+	}
+
 	day.add(1, 'd');
 
-	console.log(day, value, salesParcels.filter(s => s.month.isAfter(day)).length, purchasesParcels.filter(p => p.month.isAfter(day)).length);
 } while (day.year() < 2018 || salesParcels.filter(s => s.month.isAfter(day)).length || purchasesParcels.filter(p => p.month.isAfter(day)).length);
 
 fs.writeFile("./result.json", JSON.stringify(dates), function (err) {
-	
+
 	if (err) {
 
 		return console.log(err);
 	}
 
 	console.log('ok', value);
-}); 
+});

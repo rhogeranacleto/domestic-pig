@@ -17,4 +17,4 @@ purchases.forEach(purchase => {
 const s = sales.map(s => s.price).reduce((t, c) => c + t, 0);
 const p = purchases.map(p => p.price).reduce((t, c) => c + t, 0);
 
-console.log(value, s, p, s - p, sales[0], purchases[0]);
+console.log(value, s, p, s - p, sales[0], purchases[purchases.length-1]);

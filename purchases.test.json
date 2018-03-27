@@ -1,0 +1,23 @@
+[
+	{
+		"n_payments": 2,
+		"timestamp": "2017-01-01 10:27:38",
+		"price": "R$ 100.00",
+		"purchase_id": "9668433852054079",
+		"payment_method": "credit"
+	},
+	{
+		"n_payments": 1,
+		"timestamp": "2017-01-01 23:52:54",
+		"price": "R$ 300.00",
+		"purchase_id": "6248123156869173",
+		"payment_method": "credit"
+	},
+	{
+		"n_payments": 1,
+		"timestamp": "2017-01-02 23:52:54",
+		"price": "R$ 50.00",
+		"purchase_id": "6248123156869173",
+		"payment_method": "credit"
+	}
+]

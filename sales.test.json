@@ -1,0 +1,22 @@
+[
+	{
+		"n_payments": 1,
+		"sale_id": "9383104031717466",
+		"timestamp": "2017-01-01 03:16:28",
+		"payment_method": "credit",
+		"product_id": "7384957839601638"
+	},
+	{
+		"n_payments": 1,
+		"sale_id": "5370572301550016",
+		"timestamp": "2017-01-01 02:14:32",
+		"payment_method": "credit",
+		"product_id": "6122632629190171"
+	},{
+		"n_payments": 50,
+		"sale_id": "9383104031717466",
+		"timestamp": "2017-01-01 03:16:28",
+		"payment_method": "credit",
+		"product_id": "7384957839601638"
+	}
+]
