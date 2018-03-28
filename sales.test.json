@@ -1,9 +1,8 @@
-[
-	{
+[{
 		"n_payments": 1,
 		"sale_id": "9383104031717466",
 		"timestamp": "2017-01-01 03:16:28",
-		"payment_method": "credit",
+		"payment_method": "debit",
 		"product_id": "7384957839601638"
 	},
 	{
@@ -12,8 +11,9 @@
 		"timestamp": "2017-01-01 02:14:32",
 		"payment_method": "credit",
 		"product_id": "6122632629190171"
-	},{
-		"n_payments": 50,
+	}, 
+	{
+		"n_payments": 20,
 		"sale_id": "9383104031717466",
 		"timestamp": "2017-01-01 03:16:28",
 		"payment_method": "credit",

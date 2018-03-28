@@ -1,6 +1,15 @@
-const catalog = require('./data.js').catalog;
-const sales = require('./data.js').sales;
-const purchases = require('./data.js').purchases;
+var data;
+
+if (process.env.TEST) {
+
+	data = require('./data.test.js');
+} else {
+
+	data = require('./data.js');
+}
+const catalog = data.catalog;
+const sales = data.sales;
+const purchases = data.purchases;
 
 var value = 0;
 

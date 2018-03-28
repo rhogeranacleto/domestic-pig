@@ -86,33 +86,40 @@ do {
 
 	if (day.date() === 10) {
 
-		const salesParcelsOnMonth = salesParcels.filter(s => moment(day).startOf('month').isSame(s.month));
+		const ss = salesParcels.filter(s => moment(day).startOf('month').isSame(s.month));
 
-		salesParcelsOnMonth.forEach(sale => {
+		ss.forEach(s => {
 
-			value += sale.parcel;
+			salesParcels.splice(salesParcels.indexOf(s), 1);
 		});
 
-		const purchasesParcelsOnMonth = purchasesParcels.filter(p => moment(day).startOf('month').isSame(p.month));
+		const sss = ss.map(s => s.parcel).reduce((t, c) => t + c, 0)
 
-		purchasesParcelsOnMonth.forEach(sale => {
+		const pp = purchasesParcels.filter(p => moment(day).startOf('month').isSame(p.month));
 
-			value -= sale.parcel;
+		pp.forEach(p => {
+
+			purchasesParcels.splice(purchasesParcels.indexOf(p), 1);
 		});
+
+		const ppp = pp.map(p => p.parcel).reduce((t, c) => t + c, 0);
+
+		value += sss - ppp;
 	}
 
-	if (dates.length && dates[dates.length - 1].value !== parseInt(value) || !dates.length) {
+	//if (dates.length && dates[dates.length - 1].value !== Math.round(value) || !dates.length) {
 
-		dates.push({
-			date: day.format('YYYY-MM-DD'),
-			value: parseInt(value)
-		});
-		console.log(day.format('DD-MM-YYYY'), value, salesParcels.filter(s => s.month.isAfter(day)).length, purchasesParcels.filter(p => p.month.isAfter(day)).length);
-	}
+	dates.push({
+		date: day.format('YYYY-MM-DD'),
+		value: Math.round(value)
+	});
+
+	console.log(day.format('DD-MM-YYYY'), value, salesParcels.length, purchasesParcels.length);
+	//}
 
 	day.add(1, 'd');
 
-} while (day.year() < 2018 || salesParcels.filter(s => s.month.isAfter(day)).length || purchasesParcels.filter(p => p.month.isAfter(day)).length);
+} while (day.year() < 2018 || salesParcels.length || purchasesParcels.length);
 
 fs.writeFile("./result.json", JSON.stringify(dates), function (err) {
 
