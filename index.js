@@ -7,13 +7,15 @@ if (process.env.TEST) {
 
 	data = require('./data.js');
 }
+
 const catalog = data.catalog;
 const sales = data.sales;
 const purchases = data.purchases;
 const moment = require('moment');
 const fs = require('fs');
+var Big = require('big.js');
 
-var value = 0;
+var value = new Big(0);
 
 const dates = [];
 
@@ -22,20 +24,31 @@ const purchasesParcels = [];
 
 var day = sales[0].timestamp.isBefore(purchases[0].timestamp) ? moment(sales[0].timestamp).startOf('d') : moment(purchases[0].timestamp).startOf('d');
 
+function filterThisDay(type, day) {
+	
+	return type.filter(t => moment(t.timestamp).startOf('d').isSame(day.startOf('d')));
+}
+
 do {
 
-	const daySales = sales.filter(sale => moment(sale.timestamp).startOf('d').isSame(day));
+	const daySales = filterThisDay(sales, day);
 
-	const todayPurchases = purchases.filter(purchase => moment(purchase.timestamp).startOf('d').isSame(day));
+	const todayPurchases = filterThisDay(purchases, day);
 
 	daySales.forEach(sale => {
 
 		if (sale.payment_method === 'debit') {
 
-			value += sale.price;
+			value = value.plus(sale.price);
 		} else {
 
-			const parcel = sale.price / sale.n_payments;
+			var parcel = new Big(sale.price).div(sale.n_payments);
+			var add;
+
+			if (!parcel.eq(sale.price)) {
+
+				// add = new Big(sale.price).minus(new Big(parcel).times(sale.n_payments));
+			}
 
 			const firstMonth = moment(day).startOf('month');
 
@@ -47,6 +60,12 @@ do {
 			for (let i = 0; i < sale.n_payments; i++) {
 
 				const month = moment(firstMonth).add(i, 'month');
+
+				if (i === (sale.n_payments - 1) && add) {
+
+					parcel = parcel.plus(add);
+					//console.log(parcel.toString());
+				}
 
 				salesParcels.push({
 					month,
@@ -60,10 +79,16 @@ do {
 
 		if (purchase.payment_method === 'debit') {
 
-			value -= purchase.price;
+			value = value.minus(purchase.price);
 		} else {
 
-			const parcel = purchase.price / purchase.n_payments;
+			var parcel = new Big(purchase.price).div(purchase.n_payments);
+			var add;
+
+			if (!parcel.eq(purchase.price)) {
+
+				// add = new Big(purchase.price).minus(new Big(parcel).times(purchase.n_payments));
+			}
 
 			const firstMonth = moment(day).startOf('month');
 
@@ -75,6 +100,12 @@ do {
 			for (let i = 0; i < purchase.n_payments; i++) {
 
 				const month = moment(firstMonth).add(i, 'month');
+
+				if (i === (purchase.n_payments - 1) && add) {
+
+					parcel = parcel.plus(add);
+					//console.log(parcel.toString());
+				}
 
 				purchasesParcels.push({
 					month,
@@ -93,7 +124,7 @@ do {
 			salesParcels.splice(salesParcels.indexOf(s), 1);
 		});
 
-		const sss = ss.map(s => s.parcel).reduce((t, c) => t + c, 0)
+		const sss = ss.map(s => s.parcel).reduce((t, c) => new Big(t).plus(c), 0)
 
 		const pp = purchasesParcels.filter(p => moment(day).startOf('month').isSame(p.month));
 
@@ -102,19 +133,19 @@ do {
 			purchasesParcels.splice(purchasesParcels.indexOf(p), 1);
 		});
 
-		const ppp = pp.map(p => p.parcel).reduce((t, c) => t + c, 0);
+		const ppp = pp.map(p => p.parcel).reduce((t, c) => new Big(t).plus(c), 0);
 
-		value += sss - ppp;
+		value = value.plus(new Big(sss).minus(ppp));
 	}
 
 	//if (dates.length && dates[dates.length - 1].value !== Math.round(value) || !dates.length) {
 
 	dates.push({
 		date: day.format('YYYY-MM-DD'),
-		value: Math.round(value)
+		value: parseInt(value.toString())
 	});
 
-	console.log(day.format('DD-MM-YYYY'), value, salesParcels.length, purchasesParcels.length);
+	console.log(day.format('DD-MM-YYYY'), value.toString(), parseInt(value.toString()), Math.round(value.toString()), salesParcels.length, purchasesParcels.length);
 	//}
 
 	day.add(1, 'd');
@@ -128,5 +159,5 @@ fs.writeFile("./result.json", JSON.stringify(dates), function (err) {
 		return console.log(err);
 	}
 
-	console.log('ok', value);
+	console.log('ok', value.toString(), dates.length);
 });
